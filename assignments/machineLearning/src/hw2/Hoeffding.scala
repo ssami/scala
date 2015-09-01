@@ -69,6 +69,6 @@ object Hoeffding extends App {
     println("V1: " + f"$v1%1.3f" + ", VRandom: " + f"$vrand%1.3f" + ", Vmin: " + f"$vmin%1.3f")
   }
   
-  experiment()  
+  experiment()   
   
 }
