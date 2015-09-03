@@ -6,10 +6,10 @@
 *.log
 
 # sbt specific
-*/.cache
-*/.history
-*/.lib/
-dist/*
+**/.cache
+**/.history
+**/.lib/
+dist/**
 target/
 lib_managed/
 src_managed/
@@ -20,3 +20,6 @@ project/plugins/project/
 .scala_dependencies
 .worksheet
 
+
+# Mac specific
+**/.DS_Store

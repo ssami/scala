@@ -19,13 +19,13 @@ object Hoeffding extends App {
     for (i <- 1 to EACH_N){
       if (flipCoin()) heads += 1
     }
-    return (heads/EACH_N.toDouble).toDouble
+    return (heads.toFloat/EACH_N.toFloat)
   }
   
   def freqsAllCoins(): List[Double] = {
     val allCoins = scala.collection.mutable.MutableList[Double]()
     var i = 0 
-    for (i <- 1 to 10){
+    for (i <- 1 to NUM_COINS){
       allCoins += freqHeadsSingleCoin()
     }
     allCoins.toList
@@ -53,7 +53,7 @@ object Hoeffding extends App {
     var totalV1 = 0.0
     var totalVrand = 0.0 
     var totalVmin = 0.0 
-    for (run <- 1 to NUM_COINS) {
+    for (run <- 1 to EXPERIMENTS) {
       println("Running experiment: " + run)
       val res = runExp()
       totalV1 += res(0)
@@ -62,9 +62,9 @@ object Hoeffding extends App {
       println(res)
     }
     
-    val v1 = totalV1/EXPERIMENTS
-    val vrand = totalVrand/EXPERIMENTS
-    val vmin = totalVmin/EXPERIMENTS
+    val v1 = totalV1/EXPERIMENTS.toFloat
+    val vrand = totalVrand/EXPERIMENTS.toFloat
+    val vmin = totalVmin/EXPERIMENTS.toFloat
     
     println("V1: " + f"$v1%1.3f" + ", VRandom: " + f"$vrand%1.3f" + ", Vmin: " + f"$vmin%1.3f")
   }
