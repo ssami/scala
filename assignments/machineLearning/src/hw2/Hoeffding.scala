@@ -58,7 +58,7 @@ object Hoeffding extends App {
       val res = runExp()
       totalV1 += res(0)
       totalVrand += res(1)
-      totalVmin += res(2)
+      totalVmin += res(2)  
       println(res)
     }
     
