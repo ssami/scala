@@ -33,16 +33,16 @@ object Perceptron extends App {
     return new Point(x, y)
   }  
   
-  
-  def generateTestPoints(num: Int): Map[Point, Double] = { 
-    val pointLineA = generatePoint
-    val pointLineB = generatePoint
+  /**
+   * Generates a set of test points given the points on the slope
+   */
+  def generatePoints(num: Int, pointA: Point, pointB: Point): Map[Point, Double] = { 
     val testData = scala.collection.mutable.Map[Point, Double]()
     
     var i = 0 
     for (i <- 1 to num){
       val p = generatePoint
-      testData(p) = pointOnSide(pointLineA, pointLineB, p)
+      testData(p) = pointOnSide(pointA, pointB, p)
     }
     
     return testData.toMap
@@ -71,39 +71,72 @@ object Perceptron extends App {
     var ind = 0
     val misclass = scala.collection.mutable.ArrayBuffer[Point]()
     
-    val keys = points.keys.toList
-    for (ind <- 0 to keys.size-1) {
-      val hy = h(weight, keys(ind))
-      val y = points.get(keys(ind)).get
-      if (hy != y) misclass += keys(ind)
-    } 
-    
-    //points.keys.foreach { (i: Point) => if ( h(weight, i) != points.get(i)) misclass += i}
-
+    points.keys.foreach { (i: Point) => if ( h(weight, i) != points.get(i).get) misclass += i}
     misclass.toList
+  }
+  
+  def test(h:List[Double], p:Point => Double) = {
     
   }
   
-  def experiment(numPoints:Int):Unit = {
+  /**
+   * Returns a list of doubles: 
+   * a) the number of iterations it took to get the right answer
+   * b) the number of times h() was right about new test points
+   */
+  def run(numPoints:Int): List[Double] = {
     
-    val testPoints = generateTestPoints(numPoints)
-//    val weight = scala.collection.mutable.ArrayBuffer[Double](0.0, 0.0, 0.0)  // store initial weight vector: [w1, w2, bias]
+    val pointA = generatePoint
+    val pointB = generatePoint
+    val trainPoints = generatePoints(numPoints, pointA, pointB)
     var weight = List[Double](0.0, 0.0, 0.0)
+    var iterations = 0
     
-    while (true) {
-      val misclassified = identifyMisclassified(testPoints, weight.toList, h)
-      if (misclassified.isEmpty) return 
-      val ind = scala.util.Random.nextInt(misclassified.length)  // pick a random point
-      val mp = misclassified(ind)  // the random misclassified point
-      val yt = testPoints.get(mp)  // its target y value
-      
-      weight = newH(weight, mp, yt.get)
-      println("Weights: " + weight.toString())
-      
-    }  
+    import scala.util.control.Breaks._
+    breakable {
+      while (true) {
+        val misclassified = identifyMisclassified(trainPoints, weight.toList, h)
+        if (misclassified.isEmpty) break
+        val ind = scala.util.Random.nextInt(misclassified.length)  // pick a random point
+        val mp = misclassified(ind)  // the random misclassified point
+        val yt = trainPoints.get(mp)  // its target y value
+        
+        weight = newH(weight, mp, yt.get)
+        iterations += 1
+        println("   Iterations:"+iterations)
+        
+      }  
+    }
+    
+    // generate testing points which will test h()
+    val testPoints = generatePoints(numPoints, pointA, pointB)
+    var wrong = 0  // times that h() is right about y
+    
+    testPoints.keys.foreach { point => if (h(weight, point) != testPoints.get(point).get) wrong += 1}  //increment every time we predict the right value
+    val predictRight = wrong.toDouble/numPoints.toDouble*100.0
+    
+    return List[Double](iterations.toDouble, predictRight)
     
   }
   
-  experiment(10)
+  def experiment(numExperiments: Int, numDataPoints:Int) = {
+    // run experiments for 1000 times
+    var i = 0 
+    var avgIterations = 0.0 
+    var avgPercentRight = 0.0
+    for (i <- 1 to numExperiments) {
+      println("Running experiment num: " + i)
+      val stats = run(numDataPoints)
+      avgIterations += stats(0)
+      avgPercentRight += stats(1)
+    }
+    
+    println("Average iterations: " + avgIterations/numExperiments.toDouble)
+    println("Average percent wrong: " + avgPercentRight/numExperiments.toDouble)
+    
+  }
+  
+  experiment(10, 10)
+  
   
 }
