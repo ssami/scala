@@ -6,6 +6,7 @@
 *.log
 
 # sbt specific
+**/.cache-main
 **/.cache
 **/.history
 **/.lib/
