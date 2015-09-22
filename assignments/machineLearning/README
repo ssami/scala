@@ -1,0 +1,6 @@
+To import plugins and projects: 
+
+1. Follow the instructions on the plugin site to create a build.sbt file with the resolvers, dependencies, etc
+2. Type "sbt eclipse" 
+3. Import project into Eclipse as "import existing project" 
+4. If necessary, shut down Eclipse and start again, because Scala IDE is crazy and won't recognize plugins that are already there. 
